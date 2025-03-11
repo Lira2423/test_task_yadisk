@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Файлы по ссылке</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <div class="header-content">
+                <h2 class="page-title">
+                    <i class="fas fa-cloud" aria-hidden="true"></i>
+                    Файлы по ссылке
+                </h2>
+                <a href="{{ url_for('index') }}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Назад
+                </a>
+            </div>
+        </header>
+
+        <div class="public-link-display">
+            <span class="link-text">
+                <i class="fas fa-link"></i>
+                {{ public_key }}
+            </span>
+        </div>
+
+        {% if files %}
+            <div class="file-list">
+                <table class="file-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Имя</th>
+                            <th scope="col">Тип</th>
+                            <th scope="col">Размер</th>
+                            <th scope="col">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                            <tr>
+                                <td data-label="Имя">
+                                    <div class="file-name">
+                                        {% if file.type == "dir" %}
+                                            <i class="fas fa-folder"></i>
+                                        {% else %}
+                                            <i class="fas fa-file"></i>
+                                        {% endif %}
+                                        {{ file.name }}
+                                    </div>
+                                </td>
+                                <td data-label="Тип">{{ file.file_type }}</td>
+                                <td data-label="Размер">
+                                    {% if file.type == "file" %}
+                                        {{ file.size|filesizeformat }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td data-label="Действия">
+                                    {% if file.type == "file" %}
+                                        <form action="{{ url_for('download', file_url=file.file, file_name=file.name) }}" method="GET">
+                                            <button type="submit" class="download-btn">
+                                                <i class="fas fa-download"></i>
+                                                Скачать
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="folder-text">
+                                            <i class="fas fa-folder"></i>
+                                            Папка
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="no-files-container">
+                <div class="no-files-icon">
+                    <i class="fas fa-folder-open fa-3x"></i>
+                </div>
+                <div class="no-files-text">
+                    <p>В этой папке нет доступных файлов</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
